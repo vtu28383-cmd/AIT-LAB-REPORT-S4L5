@@ -1,0 +1,53 @@
+import random
+def get_neighbors(x, y, rows, cols):
+    directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]  # up, down, left, right
+    neighbors = []
+    for dx, dy in directions:
+        nx, ny = x + dx, y + dy
+        if 0 <= nx < rows and 0 <= ny < cols:
+            neighbors.append((nx, ny))
+    return neighbors
+
+def hill_climbing(grid, start):
+    rows, cols = len(grid), len(grid[0])
+    x, y = start
+    current_path = [(x, y)]
+    current_elevation = grid[x][y]
+
+    while True:
+        neighbors = get_neighbors(x, y, rows, cols)
+        best_neighbor = None
+        for nx, ny in neighbors:
+            if grid[nx][ny] > current_elevation:
+                if best_neighbor is None or grid[nx][ny] > grid[best_neighbor[0]][best_neighbor[1]]:
+                    best_neighbor = (nx, ny)
+
+        if best_neighbor:
+            x, y = best_neighbor
+            current_path.append((x, y))
+            current_elevation = grid[x][y]
+        else:
+            break  # No higher neighbor: local maximum reached
+
+    return current_path, current_elevation
+
+# Example mountain grid with elevation values
+mountain = [
+    [1, 2, 3, 4],
+    [2, 3, 8, 5],
+    [3, 4, 9, 6],
+    [2, 5, 6, 7]
+]
+
+# Start at a random position
+start_x = random.randint(0, len(mountain) - 1)
+start_y = random.randint(0, len(mountain[0]) - 1)
+start_position = (start_x, start_y)
+
+print(f"Starting at position: {start_position} with elevation {mountain[start_x][start_y]}")
+
+path, peak_elevation = hill_climbing(mountain, start_position)
+
+print("Path to peak:")
+print(path)
+print(f"Peak elevation reached: {peak_elevation}")
